@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class Cell : MonoBehaviour
 {
-   
+   [Header("Board Variables")]
    public float swipeAngle = 0;
-   public int column, row, targetX, targetY;
+   public int column, row, targetX, targetY, previousColumn, previousRow;
    public bool isMatched;
-   private Vector2 _firstTouchPosition, _finalTouchPosition, tempPosition;
+   private Vector2 _firstTouchPosition, _finalTouchPosition, _tempPosition;
    private GameObject _otherCell;
    private Board _board;
    
@@ -21,6 +21,8 @@ public class Cell : MonoBehaviour
       targetY = (int) transform.position.y;
       row = targetY;
       column = targetX;
+      previousRow = row;
+      previousColumn = column;
    }
 
    private void Update()
@@ -29,31 +31,49 @@ public class Cell : MonoBehaviour
       if (isMatched)
       {
          SpriteRenderer mySprite = GetComponent<SpriteRenderer>();
-         mySprite.color = new Color(1f, 1f, 1, .2f);
+         mySprite.color = new Color(1f, 1f, 1, 0.2f);
       }
       targetX = column;
       targetY = row;
-      if (Mathf.Abs(targetX - transform.position.x)> .1)
+      if (Mathf.Abs(targetX - transform.position.x)> 0.1)
       {
-         tempPosition = new Vector2(targetX, transform.position.y);
-         transform.position = Vector2.Lerp(transform.position, tempPosition, .4f);
+         _tempPosition = new Vector2(targetX, transform.position.y);
+         transform.position = Vector2.Lerp(transform.position, _tempPosition, 0.4f);
       }
       else
       {
-         tempPosition = new Vector2(targetX, transform.position.y);
-         transform.position = tempPosition;
+         _tempPosition = new Vector2(targetX, transform.position.y);
+         transform.position = _tempPosition;
          _board.allCells[column, row] = gameObject;
       }
-      if (Mathf.Abs(targetY - transform.position.y)> .1)
+      if (Mathf.Abs(targetY - transform.position.y)> 0.1)
       {
-         tempPosition = new Vector2(transform.position.x, targetY);
-         transform.position = Vector2.Lerp(transform.position, tempPosition, .4f);
+         _tempPosition = new Vector2(transform.position.x, targetY);
+         transform.position = Vector2.Lerp(transform.position, _tempPosition, 0.4f);
       }
       else
       {
-         tempPosition = new Vector2(transform.position.x, targetY);
-         transform.position = tempPosition;
+         _tempPosition = new Vector2(transform.position.x, targetY);
+         transform.position = _tempPosition;
          _board.allCells[column, row] = gameObject;
+      }
+   }
+
+   public IEnumerator CheckMoveCo()
+   {
+      yield return new WaitForSeconds(0.3f);
+      if (_otherCell != null)
+      {
+         if (!isMatched && !_otherCell.GetComponent<Cell>().isMatched)
+         {
+            _otherCell.GetComponent<Cell>().row = row;
+            _otherCell.GetComponent<Cell>().column = column;
+            row = previousRow;
+            column = previousColumn;
+         }
+
+         _otherCell = null;
+
       }
    }
 
@@ -79,13 +99,13 @@ public class Cell : MonoBehaviour
 
    private void MovePieces()
    {
-      if (swipeAngle > - 45 && swipeAngle <= 45 && column < _board.width)
+      if (swipeAngle > - 45 && swipeAngle <= 45 && column < _board.width -1)
       {
          //Right Swipe
          _otherCell = _board.allCells[column + 1, row];
          _otherCell.GetComponent<Cell>().column -= 1;
          column += 1;
-      }else if (swipeAngle >  45 && swipeAngle <= 135 && row < _board.height)
+      }else if (swipeAngle >  45 && swipeAngle <= 135 && row < _board.height -1)
       {
          //Up Swipe
          _otherCell = _board.allCells[column , row + 1];
@@ -104,6 +124,8 @@ public class Cell : MonoBehaviour
          _otherCell.GetComponent<Cell>().row += 1;
          row -= 1;
       }
+
+      StartCoroutine(CheckMoveCo());
    }
 
    private void FindMatches()
