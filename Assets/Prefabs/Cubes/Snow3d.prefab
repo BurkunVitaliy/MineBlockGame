@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 8878552204975954214}
   - component: {fileID: 7904934109706490736}
   m_Layer: 0
-  m_Name: now3d
-  m_TagString: Untagged
+  m_Name: Snow3d
+  m_TagString: Snow3d
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -125,3 +125,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   swipeAngle: 0
+  column: 0
+  row: 0
+  targetX: 0
+  targetY: 0
+  isMatched: 0

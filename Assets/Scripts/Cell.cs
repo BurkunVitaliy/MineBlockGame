@@ -8,6 +8,7 @@ public class Cell : MonoBehaviour
    
    public float swipeAngle = 0;
    public int column, row, targetX, targetY;
+   public bool isMatched;
    private Vector2 _firstTouchPosition, _finalTouchPosition, tempPosition;
    private GameObject _otherCell;
    private Board _board;
@@ -24,6 +25,12 @@ public class Cell : MonoBehaviour
 
    private void Update()
    {
+      FindMatches();
+      if (isMatched)
+      {
+         SpriteRenderer mySprite = GetComponent<SpriteRenderer>();
+         mySprite.color = new Color(1f, 1f, 1, .2f);
+      }
       targetX = column;
       targetY = row;
       if (Mathf.Abs(targetX - transform.position.x)> .1)
@@ -96,6 +103,32 @@ public class Cell : MonoBehaviour
          _otherCell = _board.allCells[column, row - 1];
          _otherCell.GetComponent<Cell>().row += 1;
          row -= 1;
+      }
+   }
+
+   private void FindMatches()
+   {
+      if (column > 0 && column < _board.width -1)
+      {
+         GameObject leftCell1 = _board.allCells[column - 1, row];
+         GameObject rightCell1 = _board.allCells[column + 1, row];
+         if (leftCell1. tag == gameObject.tag && rightCell1.tag == gameObject.tag)
+         {
+            leftCell1.GetComponent<Cell>().isMatched = true;
+            rightCell1.GetComponent<Cell>().isMatched = true;
+            isMatched = true;
+         }
+      }
+      if (row > 0 && row < _board.height -1)
+      {
+         GameObject upCell1 = _board.allCells[column, row + 1];
+         GameObject downCell1 = _board.allCells[column, row - 1];
+         if (upCell1. tag == gameObject.tag && downCell1.tag == gameObject.tag)
+         {
+            upCell1.GetComponent<Cell>().isMatched = true;
+            downCell1.GetComponent<Cell>().isMatched = true;
+            isMatched = true;
+         }
       }
    }
    
