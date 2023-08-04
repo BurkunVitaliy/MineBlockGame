@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 public class Board : MonoBehaviour
 {
-    public int width, height;
+    public int width, height, offSet;
     public GameObject tilePrefabs;
     public GameObject[,] allCells;
     public GameObject[] cells;
@@ -26,7 +26,7 @@ public class Board : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                Vector2 tempPosition = new Vector2(i, j);
+                Vector2 tempPosition = new Vector2(i, j + offSet);
                 GameObject backgroundTile = Instantiate(tilePrefabs,tempPosition,Quaternion.identity);
                 backgroundTile.transform.parent = transform;
                 backgroundTile.name = "(" + i + ", " + j + " )";
@@ -42,6 +42,8 @@ public class Board : MonoBehaviour
 
                 maxIterations = 0;
                 GameObject cell = Instantiate(cells[cellToUse], tempPosition, Quaternion.identity);
+                cell.GetComponent<Cell>().row = j;
+                cell.GetComponent<Cell>().column = i;
                 cell.transform.parent = transform;
                 cell.name = "(" + i + ", " + j + " )";
                 allCells[i, j] = cell;
@@ -104,5 +106,78 @@ public class Board : MonoBehaviour
                 }
             }
         }
+        StartCoroutine(DecreasRowCo());
     }
+
+    private IEnumerator DecreasRowCo()
+    {
+        int nullCount = 0;
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                if (allCells[i,j] == null)
+                {
+                    nullCount++;
+                }else if (nullCount > 0)
+                {
+                    allCells[i, j].GetComponent<Cell>().row -= nullCount;
+                    allCells[i, j] = null;
+                }
+            }
+            nullCount = 0;
+        }
+        yield return new WaitForSeconds(0.4f);
+        StartCoroutine(FillBoadCo());
+    }
+
+    private void RefillBoard()
+    {
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                if (allCells[i,j] == null)
+                {
+                    Vector2 tempPosition = new Vector2(i, j + offSet);
+                    int cellToUse = Random.Range(0, cells.Length);
+                    GameObject piece = Instantiate(cells[cellToUse], tempPosition, Quaternion.identity);
+                    allCells[i, j] = piece;
+                    piece.GetComponent<Cell>().row = j;
+                    piece.GetComponent<Cell>().column = i;
+                }
+            }
+        }
+    }
+
+    private bool MatchesOnBoard()
+    {
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                if (allCells[i,j] != null)
+                {
+                    if (allCells[i,j].GetComponent<Cell>().isMatched)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private IEnumerator FillBoadCo()
+    {
+        RefillBoard();
+        yield return new WaitForSeconds(0.5f);
+
+        while (MatchesOnBoard())
+        {
+            yield return new WaitForSeconds(0.5f);
+            DestroyMatches();
+        }
+    }
+    
 }

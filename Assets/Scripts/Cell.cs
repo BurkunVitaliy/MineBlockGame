@@ -17,12 +17,12 @@ public class Cell : MonoBehaviour
    private void Start()
    {
       _board = FindObjectOfType<Board>();
-      targetX = (int) transform.position.x;
+      /*targetX = (int) transform.position.x;
       targetY = (int) transform.position.y;
       row = targetY;
       column = targetX;
       previousRow = row;
-      previousColumn = column;
+      previousColumn = column;*/
    }
 
    private void Update()
@@ -39,23 +39,29 @@ public class Cell : MonoBehaviour
       {
          _tempPosition = new Vector2(targetX, transform.position.y);
          transform.position = Vector2.Lerp(transform.position, _tempPosition, 0.4f);
+         if (_board.allCells[column, row] != gameObject)
+         {
+            _board.allCells[column, row] = gameObject;
+         }
       }
       else
       {
          _tempPosition = new Vector2(targetX, transform.position.y);
          transform.position = _tempPosition;
-         _board.allCells[column, row] = gameObject;
       }
       if (Mathf.Abs(targetY - transform.position.y)> 0.1)
       {
          _tempPosition = new Vector2(transform.position.x, targetY);
          transform.position = Vector2.Lerp(transform.position, _tempPosition, 0.4f);
+         if (_board.allCells[column, row] != gameObject)
+         {
+            _board.allCells[column, row] = gameObject;
+         }
       }
       else
       {
          _tempPosition = new Vector2(transform.position.x, targetY);
          transform.position = _tempPosition;
-         _board.allCells[column, row] = gameObject;
       }
    }
 
@@ -110,24 +116,32 @@ public class Cell : MonoBehaviour
       {
          //Right Swipe
          _otherCell = _board.allCells[column + 1, row];
+         previousRow = row;
+         previousColumn = column;
          _otherCell.GetComponent<Cell>().column -= 1;
          column += 1;
       }else if (swipeAngle >  45 && swipeAngle <= 135 && row < _board.height -1)
       {
          //Up Swipe
          _otherCell = _board.allCells[column , row + 1];
+         previousRow = row;
+         previousColumn = column;
          _otherCell.GetComponent<Cell>().row -= 1;
          row += 1;
       }else if ((swipeAngle > 135 || swipeAngle <= -135) && column > 0)
       {
          //Left Swipe
          _otherCell = _board.allCells[column - 1, row];
+         previousRow = row;
+         previousColumn = column;
          _otherCell.GetComponent<Cell>().column += 1;
          column -= 1;
       }else if (swipeAngle < - 45 && swipeAngle >= -135 && row > 0)
       {
          //Down Swipe
          _otherCell = _board.allCells[column, row - 1];
+         previousRow = row;
+         previousColumn = column;
          _otherCell.GetComponent<Cell>().row += 1;
          row -= 1;
       }

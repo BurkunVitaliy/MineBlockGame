@@ -253,6 +253,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 7
   height: 10
+  offSet: 20
   tilePrefabs: {fileID: 4659172447606543332, guid: ae7e6869ffa6cd649a68a94ecb142640, type: 3}
   cells:
   - {fileID: 8772589302736993495, guid: d45c3a0118ba4034cbcd2bef0daced5a, type: 3}
