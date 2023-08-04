@@ -6,7 +6,7 @@ using UnityEngine;
 public class Cell : MonoBehaviour
 {
    [Header("Board Variables")]
-   public float swipeAngle = 0;
+   public float swipeAngle, swipeResist = 1f;
    public int column, row, targetX, targetY, previousColumn, previousRow;
    public bool isMatched;
    private Vector2 _firstTouchPosition, _finalTouchPosition, _tempPosition;
@@ -71,10 +71,15 @@ public class Cell : MonoBehaviour
             row = previousRow;
             column = previousColumn;
          }
+         else
+         {
+            _board.DestroyMatches();
+         }
 
          _otherCell = null;
-
       }
+      
+      
    }
 
 
@@ -91,10 +96,12 @@ public class Cell : MonoBehaviour
 
    private void CalculateAngle()
    {
-      swipeAngle = Mathf.Atan2(_finalTouchPosition.y - _firstTouchPosition.y,
-         _finalTouchPosition.x - _firstTouchPosition.x) * 180 / Mathf.PI;
-      Debug.Log(swipeAngle);
-      MovePieces();
+      if (Mathf.Abs(_finalTouchPosition.y - _firstTouchPosition.y) > swipeResist || Mathf.Abs(_finalTouchPosition.x - _firstTouchPosition.x) > swipeResist)
+      {
+         swipeAngle = Mathf.Atan2(_finalTouchPosition.y - _firstTouchPosition.y,
+            _finalTouchPosition.x - _firstTouchPosition.x) * 180 / Mathf.PI;
+         MovePieces();
+      }
    }
 
    private void MovePieces()
@@ -134,22 +141,28 @@ public class Cell : MonoBehaviour
       {
          GameObject leftCell1 = _board.allCells[column - 1, row];
          GameObject rightCell1 = _board.allCells[column + 1, row];
-         if (leftCell1. tag == gameObject.tag && rightCell1.tag == gameObject.tag)
+         if (leftCell1 != null && rightCell1 != null)
          {
-            leftCell1.GetComponent<Cell>().isMatched = true;
-            rightCell1.GetComponent<Cell>().isMatched = true;
-            isMatched = true;
+            if (leftCell1. tag == gameObject.tag && rightCell1.tag == gameObject.tag)
+            {
+               leftCell1.GetComponent<Cell>().isMatched = true;
+               rightCell1.GetComponent<Cell>().isMatched = true;
+               isMatched = true;
+            }
          }
       }
       if (row > 0 && row < _board.height -1)
       {
          GameObject upCell1 = _board.allCells[column, row + 1];
          GameObject downCell1 = _board.allCells[column, row - 1];
-         if (upCell1. tag == gameObject.tag && downCell1.tag == gameObject.tag)
-         {
-            upCell1.GetComponent<Cell>().isMatched = true;
-            downCell1.GetComponent<Cell>().isMatched = true;
-            isMatched = true;
+         if (upCell1 != null && downCell1 != null)
+         { 
+            if (upCell1. tag == gameObject.tag && downCell1.tag == gameObject.tag)
+            {
+               upCell1.GetComponent<Cell>().isMatched = true;
+               downCell1.GetComponent<Cell>().isMatched = true;
+               isMatched = true;
+            }
          }
       }
    }
