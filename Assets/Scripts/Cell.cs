@@ -76,6 +76,8 @@ public class Cell : MonoBehaviour
             _otherCell.GetComponent<Cell>().column = column;
             row = previousRow;
             column = previousColumn;
+            yield return new WaitForSeconds(0.5f);
+            _board.currentState = GameState.move;
          }
          else
          {
@@ -91,13 +93,19 @@ public class Cell : MonoBehaviour
 
    private void OnMouseDown()
    {
-      _firstTouchPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+      if (_board.currentState == GameState.move)
+      {
+         _firstTouchPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+      }
    }
 
    private void OnMouseUp()
    {
-      _finalTouchPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-      CalculateAngle();
+      if (_board.currentState == GameState.move)
+      {
+         _finalTouchPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+         CalculateAngle();
+      }
    }
 
    private void CalculateAngle()
@@ -107,6 +115,11 @@ public class Cell : MonoBehaviour
          swipeAngle = Mathf.Atan2(_finalTouchPosition.y - _firstTouchPosition.y,
             _finalTouchPosition.x - _firstTouchPosition.x) * 180 / Mathf.PI;
          MovePieces();
+         _board.currentState = GameState.wait;
+      }
+      else
+      {
+         _board.currentState = GameState.move;
       }
    }
 

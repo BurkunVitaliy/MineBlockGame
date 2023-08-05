@@ -4,8 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+public enum GameState
+{
+    wait,
+    move
+}
+
 public class Board : MonoBehaviour
 {
+    public GameState currentState = GameState.move;
     public int width, height, offSet;
     public GameObject tilePrefabs;
     public GameObject[,] allCells;
@@ -128,7 +135,7 @@ public class Board : MonoBehaviour
             nullCount = 0;
         }
         yield return new WaitForSeconds(0.4f);
-        StartCoroutine(FillBoadCo());
+        StartCoroutine(FillBoardCo());
     }
 
     private void RefillBoard()
@@ -168,7 +175,7 @@ public class Board : MonoBehaviour
         return false;
     }
 
-    private IEnumerator FillBoadCo()
+    private IEnumerator FillBoardCo()
     {
         RefillBoard();
         yield return new WaitForSeconds(0.5f);
@@ -178,6 +185,10 @@ public class Board : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
             DestroyMatches();
         }
+
+        yield return new WaitForSeconds(0.5f);
+        currentState = GameState.move;
+
     }
     
 }
