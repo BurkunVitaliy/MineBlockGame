@@ -14,14 +14,16 @@ public class Board : MonoBehaviour
 {
     public GameState currentState = GameState.move;
     public int width, height, offSet;
-    public GameObject tilePrefabs;
+    public GameObject tilePrefabs, destroyEffect;
     public GameObject[,] allCells;
     public GameObject[] cells;
     private BackgroundTile[,] _allTiles;
+    private FindMatches _findMatches;
     
 
     private void Start()
     {
+        _findMatches = FindObjectOfType<FindMatches>();
         _allTiles = new BackgroundTile[width, height];
         allCells = new GameObject[width, height];
         SetUp();
@@ -96,6 +98,9 @@ public class Board : MonoBehaviour
     {
         if (allCells[column, row].GetComponent<Cell>().isMatched)
         {
+            GameObject particle = Instantiate(destroyEffect,allCells[column,row].transform.position, Quaternion.identity);
+            Destroy(particle, 0.5f);
+            _findMatches.currentMatches.Remove(allCells[column, row]);
             Destroy(allCells[column,row]);
             allCells[column, row] = null;
         }

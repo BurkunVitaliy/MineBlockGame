@@ -159,7 +159,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.5663492, g: 0.67000467, b: 0.8396226, a: 0}
+  m_BackGroundColor: {r: 0.18427378, g: 0.26238817, b: 0.38679248, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -217,6 +217,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1817152034}
   - component: {fileID: 1817152035}
+  - component: {fileID: 1817152036}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -256,6 +257,7 @@ MonoBehaviour:
   height: 10
   offSet: 20
   tilePrefabs: {fileID: 4659172447606543332, guid: ae7e6869ffa6cd649a68a94ecb142640, type: 3}
+  destroyEffect: {fileID: 1500378020736912, guid: 2547a66872ebe45408ace228820a79e1, type: 3}
   cells:
   - {fileID: 8772589302736993495, guid: d45c3a0118ba4034cbcd2bef0daced5a, type: 3}
   - {fileID: 3098104424025046666, guid: ca7e3b28ce608f5469338706a8c60f5f, type: 3}
@@ -265,34 +267,16 @@ MonoBehaviour:
   - {fileID: 2394208123092960961, guid: 8c26b4eb14a20de4ea970310560b8432, type: 3}
   - {fileID: 5108344928606895804, guid: 974ef6b9baf2601408fb1313b038af07, type: 3}
   - {fileID: 450602259237775419, guid: 1c6d1f13e60eb3a45a0b1ef1ed11070e, type: 3}
---- !u!1 &2147321361
-GameObject:
+--- !u!114 &1817152036
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2147321362}
-  m_Layer: 0
-  m_Name: MatchFinder
-  m_TagString: Untagged
-  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2147321362
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2147321361}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.5998163, y: 5.3094125, z: 0.034166873}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_GameObject: {fileID: 1817152033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cb392dfac53c1d4886b6235d114afdb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentMatches: []

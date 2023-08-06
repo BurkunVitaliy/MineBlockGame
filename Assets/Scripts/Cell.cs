@@ -12,11 +12,13 @@ public class Cell : MonoBehaviour
    private Vector2 _firstTouchPosition, _finalTouchPosition, _tempPosition;
    private GameObject _otherCell;
    private Board _board;
+   private FindMatches _findMatches;
    
 
    private void Start()
    {
       _board = FindObjectOfType<Board>();
+      _findMatches = FindObjectOfType<FindMatches>();
       /*targetX = (int) transform.position.x;
       targetY = (int) transform.position.y;
       row = targetY;
@@ -27,7 +29,7 @@ public class Cell : MonoBehaviour
 
    private void Update()
    {
-      FindMatches();
+      //FindMatches();
       if (isMatched)
       {
          SpriteRenderer mySprite = GetComponent<SpriteRenderer>();
@@ -43,6 +45,7 @@ public class Cell : MonoBehaviour
          {
             _board.allCells[column, row] = gameObject;
          }
+         _findMatches.FindAllMatches();
       }
       else
       {
@@ -57,6 +60,8 @@ public class Cell : MonoBehaviour
          {
             _board.allCells[column, row] = gameObject;
          }
+         _findMatches.FindAllMatches();
+
       }
       else
       {
