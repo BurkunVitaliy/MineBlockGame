@@ -124,9 +124,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7689b2ff850de1c478f613ded0e9cfc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  swipeAngle: 0
   column: 0
   row: 0
   targetX: 0
   targetY: 0
+  previousColumn: 0
+  previousRow: 0
   isMatched: 0
+  otherCell: {fileID: 0}
+  swipeAngle: 0
+  swipeResist: 1
+  isColorBomb: 0
+  isColumnBomb: 0
+  isRowBomb: 0
+  rowArrow: {fileID: 4274747427099339470, guid: dfa17506f3384954da2af5cce0ace0c2, type: 3}
+  columnArrow: {fileID: 3904737215247318691, guid: 0eda0781645aadc4499b6dfa8f9892a3, type: 3}
+  colorBomb: {fileID: 1462399484968815904, guid: 4ad4e2087e748774b87b4d49080d6e18, type: 3}

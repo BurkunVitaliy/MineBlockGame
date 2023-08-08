@@ -6,17 +6,37 @@ using UnityEngine;
 public class Cell : MonoBehaviour
 {
    [Header("Board Variables")]
-   public float swipeAngle, swipeResist = 1f;
-   public int column, row, targetX, targetY, previousColumn, previousRow;
+   public int column;
+   public int row;
+   public int targetX;
+   public int targetY;
+   public int previousColumn;
+   public int previousRow;
    public bool isMatched;
+   
+   public GameObject otherCell;
    private Vector2 _firstTouchPosition, _finalTouchPosition, _tempPosition;
-   private GameObject _otherCell;
    private Board _board;
    private FindMatches _findMatches;
    
+   [Header("Swipe Stuff")]
+   public float swipeAngle;
+   public float swipeResist = 1f;
+
+   [Header("PowerUp Stuff")] 
+   public bool isColorBomb;
+   public bool isColumnBomb;
+   public bool isRowBomb;
+   public GameObject rowArrow;
+   public GameObject columnArrow;
+   public GameObject colorBomb;
 
    private void Start()
    {
+
+      isColumnBomb = false;
+      isRowBomb = false;
+      
       _board = FindObjectOfType<Board>();
       _findMatches = FindObjectOfType<FindMatches>();
       /*targetX = (int) transform.position.x;
@@ -26,15 +46,25 @@ public class Cell : MonoBehaviour
       previousRow = row;
       previousColumn = column;*/
    }
+   
+   //This is for testing and Debug only.
+   private void OnMouseOver()
+   {
+      if (Input.GetMouseButtonDown(1))
+      {
+         isColorBomb = true;
+         GameObject color = Instantiate(colorBomb, transform.position, Quaternion.identity);
+         color.transform.parent = transform;
+      }
+   }
 
    private void Update()
    {
-      //FindMatches();
-      if (isMatched)
+      /*if (isMatched)
       {
          SpriteRenderer mySprite = GetComponent<SpriteRenderer>();
          mySprite.color = new Color(1f, 1f, 1, 0.2f);
-      }
+      }*/
       targetX = column;
       targetY = row;
       if (Mathf.Abs(targetX - transform.position.x)> 0.1)
@@ -72,27 +102,36 @@ public class Cell : MonoBehaviour
 
    public IEnumerator CheckMoveCo()
    {
-      yield return new WaitForSeconds(0.3f);
-      if (_otherCell != null)
+      if (isColorBomb)
       {
-         if (!isMatched && !_otherCell.GetComponent<Cell>().isMatched)
+         //This piece is a color bomb, and the other piece is the color to destroy
+         _findMatches.MatchPiecesOfColor(otherCell.tag);
+         isMatched = true;
+      }else if (otherCell.GetComponent<Cell>().isColorBomb)
+      {
+         //the other piece is a color bomb, and this piece has the color to destroy
+         _findMatches.MatchPiecesOfColor(this.gameObject.tag);
+         otherCell.GetComponent<Cell>().isMatched = true;
+      }
+      yield return new WaitForSeconds(0.5f);
+      if (otherCell != null)
+      {
+         if (!isMatched && !otherCell.GetComponent<Cell>().isMatched)
          {
-            _otherCell.GetComponent<Cell>().row = row;
-            _otherCell.GetComponent<Cell>().column = column;
+            otherCell.GetComponent<Cell>().row = row;
+            otherCell.GetComponent<Cell>().column = column;
             row = previousRow;
             column = previousColumn;
             yield return new WaitForSeconds(0.5f);
+            _board.currentCell = null;
             _board.currentState = GameState.move;
          }
          else
          {
             _board.DestroyMatches();
          }
-
-         _otherCell = null;
+         //_otherCell = null;
       }
-      
-      
    }
 
 
@@ -121,6 +160,7 @@ public class Cell : MonoBehaviour
             _finalTouchPosition.x - _firstTouchPosition.x) * 180 / Mathf.PI;
          MovePieces();
          _board.currentState = GameState.wait;
+         _board.currentCell = this;
       }
       else
       {
@@ -133,34 +173,34 @@ public class Cell : MonoBehaviour
       if (swipeAngle > - 45 && swipeAngle <= 45 && column < _board.width -1)
       {
          //Right Swipe
-         _otherCell = _board.allCells[column + 1, row];
+         otherCell = _board.allCells[column + 1, row];
          previousRow = row;
          previousColumn = column;
-         _otherCell.GetComponent<Cell>().column -= 1;
+         otherCell.GetComponent<Cell>().column -= 1;
          column += 1;
       }else if (swipeAngle >  45 && swipeAngle <= 135 && row < _board.height -1)
       {
          //Up Swipe
-         _otherCell = _board.allCells[column , row + 1];
+         otherCell = _board.allCells[column , row + 1];
          previousRow = row;
          previousColumn = column;
-         _otherCell.GetComponent<Cell>().row -= 1;
+         otherCell.GetComponent<Cell>().row -= 1;
          row += 1;
       }else if ((swipeAngle > 135 || swipeAngle <= -135) && column > 0)
       {
          //Left Swipe
-         _otherCell = _board.allCells[column - 1, row];
+         otherCell = _board.allCells[column - 1, row];
          previousRow = row;
          previousColumn = column;
-         _otherCell.GetComponent<Cell>().column += 1;
+         otherCell.GetComponent<Cell>().column += 1;
          column -= 1;
       }else if (swipeAngle < - 45 && swipeAngle >= -135 && row > 0)
       {
          //Down Swipe
-         _otherCell = _board.allCells[column, row - 1];
+         otherCell = _board.allCells[column, row - 1];
          previousRow = row;
          previousColumn = column;
-         _otherCell.GetComponent<Cell>().row += 1;
+         otherCell.GetComponent<Cell>().row += 1;
          row -= 1;
       }
 
@@ -198,5 +238,18 @@ public class Cell : MonoBehaviour
          }
       }
    }
-   
+
+   public void MakeRowBomb()
+   {
+      isRowBomb = true;
+      GameObject arrow = Instantiate(rowArrow, transform.position, Quaternion.identity);
+      arrow.transform.parent = transform;
+   }
+
+   public void MakeColumnBomb()
+   {
+      isColumnBomb = true;
+      GameObject arrow = Instantiate(columnArrow, transform.position, Quaternion.identity);
+      arrow.transform.parent = transform;
+   }
 }
