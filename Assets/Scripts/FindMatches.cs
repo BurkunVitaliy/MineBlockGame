@@ -20,6 +20,27 @@ public class FindMatches : MonoBehaviour
         StartCoroutine(FindAllMatchesCo());
     }
 
+    private List<GameObject> IsBomb(Cell cell1, Cell cell2, Cell cell3)
+    {
+        List<GameObject> currentCells = new List<GameObject>();
+        if (cell1.isBomb)
+        {
+            currentMatches.Union(GetBombPieces(cell1.column ,cell1.row));
+        }
+                                
+        if (cell2.isBomb)
+        {
+            currentMatches.Union(GetBombPieces(cell2.column ,cell2.row));
+        }
+                                
+        if (cell3.isBomb)
+        {
+            currentMatches.Union(GetBombPieces(cell3.column, cell3.row));
+        }
+
+        return currentCells;
+    }
+
     private List<GameObject> IsRowBomb(Cell cell1, Cell cell2, Cell cell3)
     {
         List<GameObject> currentCells = new List<GameObject>();
@@ -108,6 +129,8 @@ public class FindMatches : MonoBehaviour
 
                                     currentMatches.Union(IsColumnBomb(leftCellCell, currentCellCell, rightCellCell));
                                 
+                                    currentMatches.Union(IsBomb(leftCellCell, currentCellCell, rightCellCell));
+                                    
                                     GetNearbyPieces(leftCell,currentCell,rightCell);
                                 }
                             }  
@@ -128,6 +151,8 @@ public class FindMatches : MonoBehaviour
                                     currentMatches.Union(IsColumnBomb(upCellCell, currentCellCell,downCellCell));
 
                                     currentMatches.Union(IsRowBomb(upCellCell, currentCellCell,downCellCell));
+                                    
+                                    currentMatches.Union(IsBomb(upCellCell, currentCellCell,downCellCell));
                                 
                                     GetNearbyPieces(upCell,currentCell,downCell);
                                 }
@@ -158,7 +183,25 @@ public class FindMatches : MonoBehaviour
             }
         }
     }
-    
+
+    private List<GameObject> GetBombPieces(int column,int row)
+    {
+        List<GameObject> cells = new List<GameObject>();
+        for (int i = column - 1; i<= column +1; i++)
+        {
+            for (int j = row -1; j <= row +1; j++)
+            {
+                //Check if the piece is inside the board
+                if (i >= 0 && i < _board.width && j >= 0 && j < _board.height)
+                {
+                    cells.Add(_board.allCells[i,j]);
+                    _board.allCells[i, j].GetComponent<Cell>().isMatched = true;
+                }
+            }
+        }
+
+        return cells;
+    }
 
     private List<GameObject> GetColumnPieces(int column)
     {

@@ -27,6 +27,8 @@ public class Cell : MonoBehaviour
    public bool isColorBomb;
    public bool isColumnBomb;
    public bool isRowBomb;
+   public bool isBomb;
+   public GameObject bomb;
    public GameObject rowArrow;
    public GameObject columnArrow;
    public GameObject colorBomb;
@@ -36,6 +38,8 @@ public class Cell : MonoBehaviour
 
       isColumnBomb = false;
       isRowBomb = false;
+      isColorBomb = false;
+      isBomb = false;
       
       _board = FindObjectOfType<Board>();
       _findMatches = FindObjectOfType<FindMatches>();
@@ -52,8 +56,8 @@ public class Cell : MonoBehaviour
    {
       if (Input.GetMouseButtonDown(1))
       {
-         isColorBomb = true;
-         GameObject color = Instantiate(colorBomb, transform.position, Quaternion.identity);
+         isBomb = true;
+         GameObject color = Instantiate(bomb, transform.position, Quaternion.identity);
          color.transform.parent = transform;
       }
    }
