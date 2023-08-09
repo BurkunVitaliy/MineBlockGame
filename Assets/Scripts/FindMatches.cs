@@ -20,6 +20,66 @@ public class FindMatches : MonoBehaviour
         StartCoroutine(FindAllMatchesCo());
     }
 
+    private List<GameObject> IsRowBomb(Cell cell1, Cell cell2, Cell cell3)
+    {
+        List<GameObject> currentCells = new List<GameObject>();
+        if (cell1.isRowBomb)
+        {
+            currentMatches.Union(GetRowPieces(cell1.row));
+        }
+                                
+        if (cell2.isRowBomb)
+        {
+            currentMatches.Union(GetRowPieces(cell2.row));
+        }
+                                
+        if (cell3.isRowBomb)
+        {
+            currentMatches.Union(GetRowPieces(cell3.row));
+        }
+
+        return currentCells;
+    }
+    
+    private List<GameObject> IsColumnBomb(Cell cell1, Cell cell2, Cell cell3)
+    {
+        List<GameObject> currentCells = new List<GameObject>();
+        if (cell1.isColumnBomb)
+        {
+            currentMatches.Union(GetColumnPieces(cell1.column));
+        }
+                                
+        if (cell2.isColumnBomb)
+        {
+            currentMatches.Union(GetColumnPieces(cell2.column));
+        }
+                                
+        if (cell3.isColumnBomb)
+        {
+            currentMatches.Union(GetColumnPieces(cell3.column));
+        }
+
+        return currentCells;
+    }
+
+    private void AddToListAndMatch(GameObject cell)
+    {
+        if (!currentMatches.Contains(cell))
+        {
+            currentMatches.Add(cell);
+        }
+        cell.GetComponent<Cell>().isMatched = true;
+    }
+
+    private void GetNearbyPieces(GameObject cell1, GameObject cell2, GameObject cell3)
+    {
+        AddToListAndMatch(cell1);
+        
+        AddToListAndMatch(cell2);
+        
+        AddToListAndMatch(cell3);
+    }
+
     private IEnumerator FindAllMatchesCo()
     {
         yield return new WaitForSeconds(0.2f);
@@ -28,53 +88,29 @@ public class FindMatches : MonoBehaviour
             for (int j = 0; j < _board.height; j++)
             {
                 GameObject currentCell = _board.allCells[i, j];
+                
                 if (currentCell != null)
                 {
+                    Cell currentCellCell = currentCell.GetComponent<Cell>();
                     if (i > 0 && i < _board.width - 1)
                     {
                         GameObject leftCell = _board.allCells[i - 1, j];
                         GameObject rightCell = _board.allCells[i + 1, j];
                         if (leftCell != null && rightCell != null)
                         {
-                            if (leftCell.tag == currentCell.tag && rightCell.tag == currentCell.tag)
+                            Cell rightCellCell = rightCell.GetComponent<Cell>();
+                            Cell leftCellCell = leftCell.GetComponent<Cell>();
+                            if (leftCell != null && rightCell != null)
                             {
-                                if (currentCell.GetComponent<Cell>().isRowBomb 
-                                    || leftCell.GetComponent<Cell>().isRowBomb
-                                    || rightCell.GetComponent<Cell>().isRowBomb)
+                                if (leftCell.tag == currentCell.tag && rightCell.tag == currentCell.tag)
                                 {
-                                    currentMatches.Union(GetRowPieces(j));
-                                }
+                                    currentMatches.Union(IsRowBomb(leftCellCell,currentCellCell,rightCellCell));
 
-                                if (currentCell.GetComponent<Cell>().isColumnBomb)
-                                {
-                                    currentMatches.Union(GetColumnPieces(i));
-                                }
-
-                                if (leftCell.GetComponent<Cell>().isColumnBomb)
-                                {
-                                    currentMatches.Union(GetColumnPieces(i - 1));
-                                }
+                                    currentMatches.Union(IsColumnBomb(leftCellCell, currentCellCell, rightCellCell));
                                 
-                                if (rightCell.GetComponent<Cell>().isColumnBomb)
-                                {
-                                    currentMatches.Union(GetColumnPieces(i + 1));
+                                    GetNearbyPieces(leftCell,currentCell,rightCell);
                                 }
-                                if (!currentMatches.Contains(leftCell))
-                                {
-                                    currentMatches.Add(leftCell);
-                                }
-                                leftCell.GetComponent<Cell>().isMatched = true;
-                                if (!currentMatches.Contains(rightCell))
-                                {
-                                    currentMatches.Add(rightCell);
-                                }
-                                rightCell.GetComponent<Cell>().isMatched = true;
-                                if (!currentMatches.Contains(currentCell))
-                                {
-                                    currentMatches.Add(currentCell);
-                                }
-                                currentCell.GetComponent<Cell>().isMatched = true;
-                            }
+                            }  
                         }
                     }
                     if (j > 0 && j < _board.height - 1)
@@ -83,45 +119,18 @@ public class FindMatches : MonoBehaviour
                         GameObject downCell = _board.allCells[i, j -1];
                         if (upCell != null && downCell != null)
                         {
-                            if (upCell.tag == currentCell.tag && downCell.tag == currentCell.tag)
+                            Cell downCellCell = downCell.GetComponent<Cell>();
+                            Cell upCellCell = upCell.GetComponent<Cell>();
+                            if (upCell != null && downCell != null)
                             {
-                                if (currentCell.GetComponent<Cell>().isColumnBomb 
-                                    || upCell.GetComponent<Cell>().isColumnBomb
-                                    || downCell.GetComponent<Cell>().isColumnBomb)
+                                if (upCell.tag == currentCell.tag && downCell.tag == currentCell.tag)
                                 {
-                                    currentMatches.Union(GetColumnPieces(i));
-                                }
+                                    currentMatches.Union(IsColumnBomb(upCellCell, currentCellCell,downCellCell));
+
+                                    currentMatches.Union(IsRowBomb(upCellCell, currentCellCell,downCellCell));
                                 
-                                if (currentCell.GetComponent<Cell>().isRowBomb)
-                                {
-                                    currentMatches.Union(GetRowPieces(j));
+                                    GetNearbyPieces(upCell,currentCell,downCell);
                                 }
-                                
-                                if (upCell.GetComponent<Cell>().isRowBomb)
-                                {
-                                    currentMatches.Union(GetRowPieces(j + 1));
-                                }
-                                
-                                if (downCell.GetComponent<Cell>().isRowBomb)
-                                {
-                                    currentMatches.Union(GetRowPieces(j - 1));
-                                }
-                                
-                                if (!currentMatches.Contains(upCell))
-                                {
-                                    currentMatches.Add(upCell);
-                                }
-                                upCell.GetComponent<Cell>().isMatched = true;
-                                if (!currentMatches.Contains(downCell))
-                                {
-                                    currentMatches.Add(downCell);
-                                }
-                                downCell.GetComponent<Cell>().isMatched = true;
-                                if (!currentMatches.Contains(currentCell))
-                                {
-                                    currentMatches.Add(currentCell);
-                                }
-                                currentCell.GetComponent<Cell>().isMatched = true;
                             }
                         }
                     }
